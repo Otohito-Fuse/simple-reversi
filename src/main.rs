@@ -9,7 +9,7 @@ use boardstate::BoardState;
 
 /// 整数の入力が不正である旨のメッセージ
 fn err_not_int() {
-    println!("半角数字で整数を入力して下さい．");
+    println!("半角数字で整数を入力してください．");
 }
 
 /// 入力が不適切な旨のメッセージ

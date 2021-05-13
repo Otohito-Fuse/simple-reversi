@@ -240,9 +240,8 @@ fn main() {
         if row_num == size + 1 {
             with_help_or_not = true;
             continue;
-        } else {
-            with_help_or_not = false;
         }
+        with_help_or_not = false;
 
         // 2つ目の数字受け取り
         let column_num: usize;

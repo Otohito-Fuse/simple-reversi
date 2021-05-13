@@ -108,7 +108,7 @@ impl BoardState {
         let s = &self.state;
         for i in 0..n {
             for j in 0..n {
-                if let Some(_) = &s[i][j] {
+                if let Some(_) = s[i][j] {
                     // もう置いてあるマスはスルー
                     continue;
                 }
@@ -250,7 +250,7 @@ impl BoardState {
             Turn::White
         };
 
-        // 置けるなら終了
+        // 置けるならtrueを返して終了
         if BoardState::puttable(&self) {
             return true;
         }
@@ -262,7 +262,7 @@ impl BoardState {
             Turn::White
         };
 
-        // 置けるなら終了
+        // 今度は置けるならtrueを返す
         if BoardState::puttable(&self) {
             true
         } else {

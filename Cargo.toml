@@ -1,0 +1,10 @@
+[package]
+name = "simple-reversi"
+version = "0.1.0"
+authors = ["otohitofuse"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = { version = "=0.7.3", features = ["small_rng"] }

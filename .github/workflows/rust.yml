@@ -58,7 +58,7 @@ jobs:
           use-cross: true
 
       - run: |
-          zip --junk-paths simple-reversi-${{ matrix.target }} target/${{ matrix.target }}/release/simple-reversi{,.exe}
+          zip -r simple-reversi-${{ matrix.target }} target/${{ matrix.target }}/release
       - uses: actions/upload-artifact@v1
         with:
           name: build-${{ matrix.target }}

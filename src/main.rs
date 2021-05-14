@@ -1,5 +1,5 @@
-use std::time::Duration;
 use std::thread::sleep;
+use std::time::Duration;
 
 use rand::seq::SliceRandom;
 use rand::thread_rng;
@@ -99,11 +99,14 @@ fn main() {
 
     // CPUとやるかどうかの入力・決定
     let mut cpu_flag: bool = false;
-    println!("CPUとやりますか？CPUとやる場合はy，そうではない場合はそれ以外を入力してください．");
+    let mut cpu_only_flag: bool = false;
+    println!("CPUと戦う場合は1，CPUだけが操作しているのを見る場合は2，自分で両方を操作する場合はそれ以外を入力してください．");
     let mut y_or_no = String::new();
     std::io::stdin().read_line(&mut y_or_no).ok();
-    if y_or_no.trim() == "y" {
+    if y_or_no.trim() == "1" {
         cpu_flag = true;
+    } else if y_or_no.trim() == "2" {
+        cpu_only_flag = true;
     }
 
     let mut i_am_white: bool = false;
@@ -155,34 +158,50 @@ fn main() {
         preview_turn(&bs);
 
         // CPUの番の場合
-        if cpu_flag && (i_am_white || bs.is_it_white_turn()) && !(i_am_white && bs.is_it_white_turn()) {
+        if (cpu_flag
+            && (i_am_white || bs.is_it_white_turn())
+            && !(i_am_white && bs.is_it_white_turn()))
+            || cpu_only_flag
+        {
             // 乱数発生用
             let mut rng = thread_rng();
 
             // 時間を空けつつメッセージを表示
-            sleep(Duration::from_millis(250));
+            if cpu_flag {
+                sleep(Duration::from_millis(250));
+            }
             println!("\nCPU操作中...\n");
-            sleep(Duration::from_millis(750));
+            sleep(Duration::from_millis(if cpu_only_flag { 500 } else { 750 }));
 
             // 置けるマス目を重み付けしつつVecで管理
-            let mut options: Vec<(usize,usize)> = Vec::new();
+            let mut options: Vec<(usize, usize)> = Vec::new();
+            let mut options_corners: Vec<(usize, usize)> = Vec::new();
             let vec = &bs.cnt_reversable();
             let n = bs.get_size();
             for i in 0..n {
                 for j in 0..n {
                     if vec[i][j] > 0 {
                         for _ in 0..vec[i][j] {
-                            options.push((i,j));
+                            options.push((i, j));
+                        }
+                        if (i == 0 || i == n - 1) && (j == 0 || j == n - 1) {
+                            options_corners.push((i, j));
                         }
                     }
                 }
             }
 
             // ランダムに選ぶ
-            let &(i,j) = options.choose(&mut rng).unwrap();
+            let &(i, j) = if options_corners.is_empty() {
+                options
+            } else {
+                options_corners
+            }
+            .choose(&mut rng)
+            .unwrap();
 
             // マス目更新
-            let can_continue = bs.put(i,j);
+            let can_continue = bs.put(i, j);
 
             // 続行できないときはループを抜けてゲームを終了
             if !can_continue {
@@ -194,9 +213,7 @@ fn main() {
         // 以下、自分の番の場合
 
         // 操作方法の表示
-        println!(
-            "駒を置く場所を，行番号，列番号の順で，Return区切りで入力してください．"
-        );
+        println!("駒を置く場所を，行番号，列番号の順で，Return区切りで入力してください．");
         println!("もうゲームを終わって結果を見たい場合は，1つ目の数字として0を入力してください．");
         if !with_help_or_not {
             println!(
